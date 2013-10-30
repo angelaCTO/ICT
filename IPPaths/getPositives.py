@@ -3,6 +3,10 @@ import cv, cv2
 import fileinput
 import os
 
+vid_dir = 
+min_size = 500
+num_hits = 10
+
 
 # Description: Checks video files in passed directory for tiger hits 
 # Params: vid_dir   --  path of directory
@@ -12,6 +16,7 @@ import os
 def checkClips(vid_dir, min_size, num_hits ):
   tiger_clip = []
   for clip in os.listdir(vid_dir):
+      clip = vid_dir + "/" + clip
       if (checkPos(clip, min_size,num_ hits) != -1):
           tiger_clip.append(clip)
   return tiger_clip
@@ -27,32 +32,37 @@ def checkPos(clip, min_size, num_hits):
     hits = 0
 
     # Open input clip for processing     
-    cap = cv2.VideoCapture.open(clip)
+    cap = cv2.VideoCapture.open(str(clip))
 
-    if not cv2.VideoCapture.isOpened():
-        print 'Could not open video file:', clip
-        return -1 
-
-    detector = TigerDetector(min_size)
-  
-    while True:
-        frame = cap.read()
-  
-        # Check if end of clip 
-        if frame.empty():
-            break
+    opened = cap.isOpened()
+    print opened
     
-        # Pass video file to tiger detector
-        is_detected, coordinates = process_frame(frame)
+    if True:
+    #if cap.isOpened():
+        detector = TigerDetector(min_size)
+  
+        while True:
+            frame_capt, frame = cap.read()
+            
+            # Check if end of clip 
+            if frame.empty():
+                break
+       
+            if frame_capt: # If frame read success
+                # Pass video file to tiger detector
+                is_detected, coordinates = process_frame(frame)
+                if is_detected:
+                    hits += 1
+                # Read the next line
+                cap.read()
+            
+           if hits >= num_hits:
+               return clip
+    else:
+        print 'Could not open video file: ', clip
+        return -1
 
-
-        # If is_detected = true && > 10 hits return file name     
-        if is_detected:
-            hits += 1
-
-        # Read next frame
-        cap.read()
-
+checkClips(vid_dir, min_size, num_hits)
 
     # If more than 10-frame tiger sighting, print file path
     if hits >= num_hits: 
