@@ -49,7 +49,7 @@ try:
     print 'Database opened successfully'
 
     print '\nSelecting files from date-time: ', date    
-    dated = log.select_dated_files(date)
+    dated = log.select_date(date)
     print dated
 
     # Append date paths to vid_list.txt !!
