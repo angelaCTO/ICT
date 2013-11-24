@@ -5,6 +5,7 @@ import subprocess
 import sqlite3
 import argparse
 import datetime
+import cv, cv2
 import sys
 import re
 
@@ -14,16 +15,7 @@ import re
 #args = parser.parse_args()
 
 def process_date(date):
-#    delimiters = "/" 
-#    regx_pattern = '|'.join(map(re.escape, delimiters))
-#    regx = re.compile(regx_pattern)
-#    for xd in date.splitlines():  
-#        if(xd.count('/') == 3): 
-#            year, month, day, hour = regx.split(xd)
-#            return True # Date parsed successfully
-#    else:
-#            return False # Error: Missing arguments
-    try:
+   try:
         date = datetime.datetime.strptime(date,"%Y/%m/%d/%H")
         return True
     except ValueError:
@@ -52,11 +44,15 @@ try:
     dated = log.select_date(date)
     print dated
 
-    # Append date paths to vid_list.txt !!
 
     print '\nClosing database'
     log.close_data_base(tiger_db)
     print 'Database closed successfully'
+
+    # Write date paths to vid_paths.txt
+    for path in dated:
+        with open(vid_paths.txt, 'w') as output:
+            output.write('file '+ path + '\n')    
 
 except sqlite3.Error, e:
     print "Error %s:" % e.args[0]
@@ -68,5 +64,11 @@ print '\nRunning compile_list.sh'
 subprocess.call("./compile_list.sh", shell=True)
 print 'Sucessful.'
 
-# Return stitched videos and play in viewer
 
+# Return stitched videos and play in viewer
+cap = cv2.VidCapture(vid_path)
+while cap.isOpened():
+    ret, frame = cap.read()
+    cv2.imshow('tiger_vid',frame)
+cap.release()
+cv2.destroyAllWindows()
