@@ -25,8 +25,7 @@ def prompt_date():
         else:
            date = raw_input("\nError processing date-time. Please re-enter date-time to be searched (yyyy/mm/dd/hh): ")       
 
-
-
+# MAIN #
 
 date = prompt_date()
 
@@ -60,6 +59,11 @@ print '\nRunning compile_list.sh'
 subprocess.call("./compile_list.sh", shell=True)
 print 'Sucessful.'
 
+vlc_path = 
+vid_path =    # path of output.vid
 
-# Return stitched videos and play in viewer
+# Return stitched videos and play in viewer (vlc)
+subprocess.call([vlc_path, vid_path, '--play-and-exit', '--fullscreen'], shell=True)
+
+# End
 
